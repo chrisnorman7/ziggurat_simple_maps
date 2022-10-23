@@ -67,7 +67,6 @@ class MapLevel extends Level {
                     position: item.coordinates?.toDouble(),
                   ),
                 )
-                .toList()
           ],
         );
 
