@@ -18,8 +18,6 @@ class MapLevelItem {
   });
 
   /// The name of this item.
-  ///
-  /// THis value is used only for reference.
   final String name;
 
   /// The coordinates of this object.

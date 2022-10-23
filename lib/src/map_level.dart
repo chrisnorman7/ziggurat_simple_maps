@@ -442,7 +442,13 @@ class MapLevel extends Level {
   /// Show the given [item].
   void showItem(final MapLevelItem item) {
     stopEarcon();
-    lastEarcon = playSound(sound: item.earcon, keepAlive: true);
+    lastEarcon = game.outputMessage(
+      Message(
+        keepAlive: true,
+        sound: item.earcon,
+        text: item.name,
+      ),
+    );
   }
 
   /// Stop the [lastEarcon] sound from playing.
@@ -457,7 +463,13 @@ class MapLevel extends Level {
     if (i.isNotEmpty) {
       final item = i[currentItemPosition ?? 0];
       stopEarcon();
-      lastEarcon = playSound(sound: item.descriptionSound, keepAlive: true);
+      lastEarcon = game.outputMessage(
+        Message(
+          keepAlive: true,
+          sound: item.descriptionSound,
+          text: item.descriptionText,
+        ),
+      );
     }
   }
 
