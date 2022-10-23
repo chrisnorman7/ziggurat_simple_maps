@@ -5,9 +5,6 @@ import 'package:ziggurat/levels.dart';
 import 'package:ziggurat/sound.dart';
 import 'package:ziggurat/ziggurat.dart';
 
-import '../../command_triggers.dart';
-import '../../constants.dart';
-import '../assets/earcons.dart';
 import 'map_level_item.dart';
 import 'map_level_terrain.dart';
 import 'watch_item.dart';
@@ -39,6 +36,23 @@ class MapLevel extends Level {
     this.lastMoved = 0,
     this.lastTurn = 0,
     this.currentTerrain,
+    this.moveStick = GameControllerAxis.lefty,
+    this.moveThreshold = 0.2,
+    this.turnStick = GameControllerAxis.rightx,
+    this.turnThreshold = 0.2,
+    this.sonarBeaconSound,
+    this.sonarHereSound,
+    this.forwardsCommandTriggerName = 'move_forwards',
+    this.backwardsCommandTriggerName = 'move_backwards',
+    this.turnLeftCommandTriggerName = 'turn_left',
+    this.turnRightCommandTriggerName = 'turn_right',
+    this.activateTerrainCommandTriggerName = 'activate_terrain',
+    this.describeItemCommandTriggerName = 'describe_item',
+    this.previousItemCommandTriggerName = 'previous_item',
+    this.nextItemCommandTriggerName = 'next_item',
+    this.lastEarcon,
+    this.currentItemPosition,
+    this.watchItemCommandTriggerName = 'watch_item',
   })  : tiles = [],
         interfaceSoundsChannel = game.createSoundChannel(),
         super(
@@ -56,6 +70,33 @@ class MapLevel extends Level {
                 .toList()
           ],
         );
+
+  /// The name of the command trigger to watch an item.
+  String watchItemCommandTriggerName;
+
+  /// The name of the command trigger to describe the current item.
+  String describeItemCommandTriggerName;
+
+  /// The name of the command trigger to inspect the previous item.
+  String previousItemCommandTriggerName;
+
+  /// The name of the command trigger to inspect the previous item.
+  String nextItemCommandTriggerName;
+
+  /// The name of the command trigger to activate the current terrain.
+  String activateTerrainCommandTriggerName;
+
+  /// The name of the command trigger to turn left.
+  String turnLeftCommandTriggerName;
+
+  /// The name of the command trigger to turn right.
+  String turnRightCommandTriggerName;
+
+  /// The name of the command trigger to move the player backwards.
+  final String backwardsCommandTriggerName;
+
+  /// The name of the command trigger to move the player forwards.
+  final String forwardsCommandTriggerName;
 
   /// The max x + 1 of this map.
   final int maxX;
@@ -132,6 +173,24 @@ class MapLevel extends Level {
 
   /// The reverb send to be used by [interfaceSoundsChannel].
   late final BackendReverb? reverb;
+
+  /// The stick to move the character.
+  final GameControllerAxis moveStick;
+
+  /// The threshold for moving.
+  final double moveThreshold;
+
+  /// The stick used for turning.
+  final GameControllerAxis turnStick;
+
+  /// The turning threshold.
+  final double turnThreshold;
+
+  /// The sound to play to indicate the distance of a [WatchItem] instance.
+  final AssetReference? sonarBeaconSound;
+
+  /// The sound to play when a [WatchItem] instance is here.
+  final AssetReference? sonarHereSound;
 
   /// Whether or not the player is moving.
   ///
@@ -244,14 +303,20 @@ class MapLevel extends Level {
     if (d < 1) {
       if (watch.beaconLastPlayed != 0) {
         watching = null;
-        game.playSimpleSound(sound: sonarHere);
+        final sound = sonarHereSound;
+        if (sound != null) {
+          game.playSimpleSound(sound: sound);
+        }
       }
     } else {
       final time = (d * sonarDistanceMultiplier).floor();
       watch.beaconLastPlayed += timeDelta;
       if (watch.beaconLastPlayed >= time) {
         watch.beaconLastPlayed = 0;
-        game.playSimpleSound(sound: sonarBeacon);
+        final sound = sonarBeaconSound;
+        if (sound != null) {
+          game.playSimpleSound(sound: sound);
+        }
       }
     }
   }
@@ -321,49 +386,49 @@ class MapLevel extends Level {
       reverb = null;
     }
     registerCommand(
-      forwardsCommandTrigger.name,
+      forwardsCommandTriggerName,
       Command(
         onStart: () => moving = MovementDirections.forward,
         onStop: () => moving = null,
       ),
     );
     registerCommand(
-      backwardsCommandTrigger.name,
+      backwardsCommandTriggerName,
       Command(
         onStart: () => moving = MovementDirections.backward,
         onStop: () => moving = null,
       ),
     );
     registerCommand(
-      turnLeftCommandTrigger.name,
+      turnLeftCommandTriggerName,
       Command(
         onStart: () => turning = TurnDirections.left,
         onStop: () => turning = null,
       ),
     );
     registerCommand(
-      turnRightCommandTrigger.name,
+      turnRightCommandTriggerName,
       Command(
         onStart: () => turning = TurnDirections.right,
         onStop: () => turning = null,
       ),
     );
     registerCommand(
-      activateFeature.name,
+      activateTerrainCommandTriggerName,
       Command(
         onStart: () => getTerrain(coordinates.floor())?.onActivate?.call(),
       ),
     );
-    registerCommand(nextItemCommandTrigger.name, Command(onStart: nextItem));
+    registerCommand(nextItemCommandTriggerName, Command(onStart: nextItem));
     registerCommand(
-      previousItemCommandTrigger.name,
+      previousItemCommandTriggerName,
       Command(onStart: previousItem),
     );
     registerCommand(
-      describeItemCommandTrigger.name,
+      describeItemCommandTriggerName,
       Command(onStart: describeItem),
     );
-    registerCommand(watchItemCommandTrigger.name, Command(onStart: watchItem));
+    registerCommand(watchItemCommandTriggerName, Command(onStart: watchItem));
     super.onPush(fadeLength: fadeLength);
   }
 
@@ -410,21 +475,24 @@ class MapLevel extends Level {
           return;
         }
         watching = WatchItem(item: item);
-        final sound = game.playSimpleSound(
-          sound: sonarBeacon,
-          position: SoundPosition3d(
-            x: position.x.toDouble(),
-            y: position.y.toDouble(),
-          ),
-        );
-        final r = reverb;
-        if (r != null) {
-          sound.channel.addReverb(reverb: r);
+        final sound = sonarBeaconSound;
+        if (sound != null) {
+          final playback = game.playSimpleSound(
+            sound: sound,
+            position: SoundPosition3d(
+              x: position.x.toDouble(),
+              y: position.y.toDouble(),
+            ),
+          );
+          final r = reverb;
+          if (r != null) {
+            playback.channel.addReverb(reverb: r);
+          }
+          game.callAfter(
+            func: playback.channel.destroy,
+            runAfter: 1000,
+          );
         }
-        game.callAfter(
-          func: sound.channel.destroy,
-          runAfter: 1000,
-        );
       }
     }
   }

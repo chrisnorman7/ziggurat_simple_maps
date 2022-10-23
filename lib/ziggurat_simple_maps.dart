@@ -1,8 +1,7 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Simple tile-based maps for [Ziggurat](https://github.com/chrisnorman7/ziggurat).
 library ziggurat_simple_maps;
 
-export 'src/ziggurat_simple_maps_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/map_level.dart';
+export 'src/map_level_item.dart';
+export 'src/map_level_terrain.dart';
+export 'src/watch_item.dart';
