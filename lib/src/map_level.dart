@@ -36,9 +36,9 @@ class MapLevel extends Level {
     this.lastMoved = 0,
     this.lastTurn = 0,
     this.currentTerrain,
-    this.moveStick = GameControllerAxis.lefty,
+    this.moveAxis = GameControllerAxis.lefty,
     this.moveThreshold = 0.2,
-    this.turnStick = GameControllerAxis.rightx,
+    this.turnAxis = GameControllerAxis.rightx,
     this.turnThreshold = 0.2,
     this.sonarBeaconSound,
     this.sonarHereSound,
@@ -175,13 +175,13 @@ class MapLevel extends Level {
   late final BackendReverb? reverb;
 
   /// The stick to move the character.
-  final GameControllerAxis moveStick;
+  final GameControllerAxis moveAxis;
 
   /// The threshold for moving.
   final double moveThreshold;
 
   /// The stick used for turning.
-  final GameControllerAxis turnStick;
+  final GameControllerAxis turnAxis;
 
   /// The turning threshold.
   final double turnThreshold;
@@ -221,7 +221,7 @@ class MapLevel extends Level {
   void handleSdlEvent(final Event event) {
     if (event is ControllerAxisEvent) {
       final value = event.smallValue;
-      if (event.axis == moveStick) {
+      if (event.axis == moveAxis) {
         if (value.abs() > moveThreshold) {
           moving = value > 0
               ? MovementDirections.backward
@@ -229,7 +229,7 @@ class MapLevel extends Level {
         } else {
           moving = null;
         }
-      } else if (event.axis == turnStick) {
+      } else if (event.axis == turnAxis) {
         if (value.abs() >= turnThreshold) {
           turning = value < 0 ? TurnDirections.left : TurnDirections.right;
         } else {
