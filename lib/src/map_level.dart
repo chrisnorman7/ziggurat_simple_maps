@@ -364,17 +364,7 @@ class MapLevel extends Level {
     while (tiles.length < maxX) {
       tiles.add(List.generate(maxY, (final index) => null));
     }
-    for (final feature in terrains) {
-      for (var x = feature.start.x; x <= feature.end.x; x++) {
-        for (var y = feature.start.y; y <= feature.end.y; y++) {
-          final f = tiles[x][y];
-          if (f != null) {
-            throw StateError('Feature $feature overlaps feature $f.');
-          }
-          tiles[x][y] = feature;
-        }
-      }
-    }
+    terrains.forEach(registerTerrain);
     final preset = reverbPreset;
     if (preset != null) {
       final r = game.createReverb(preset);
@@ -534,6 +524,19 @@ class MapLevel extends Level {
     }
     currentItemPosition = p;
     showItem(i[p]);
+  }
+
+  /// Register the given [terrain].
+  void registerTerrain(final MapLevelTerrain terrain) {
+    for (var x = terrain.start.x; x <= terrain.end.x; x++) {
+      for (var y = terrain.start.y; y <= terrain.end.y; y++) {
+        final f = tiles[x][y];
+        if (f != null) {
+          throw StateError('Feature $terrain overlaps feature $f.');
+        }
+        tiles[x][y] = terrain;
+      }
+    }
   }
 
   /// Navigate to a new [mapLevel].
