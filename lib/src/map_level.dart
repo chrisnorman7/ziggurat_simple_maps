@@ -68,7 +68,61 @@ class MapLevel extends Level {
                   ),
                 )
           ],
-        );
+        ) {
+    final preset = reverbPreset;
+    if (preset != null) {
+      final r = game.createReverb(preset);
+      interfaceSoundsChannel.addReverb(reverb: r);
+      game.ambianceSounds.addReverb(reverb: r);
+      reverb = r;
+    } else {
+      reverb = null;
+    }
+    registerCommand(
+      forwardsCommandTriggerName,
+      Command(
+        onStart: () => moving = MovementDirections.forward,
+        onStop: () => moving = null,
+      ),
+    );
+    registerCommand(
+      backwardsCommandTriggerName,
+      Command(
+        onStart: () => moving = MovementDirections.backward,
+        onStop: () => moving = null,
+      ),
+    );
+    registerCommand(
+      turnLeftCommandTriggerName,
+      Command(
+        onStart: () => turning = TurnDirections.left,
+        onStop: () => turning = null,
+      ),
+    );
+    registerCommand(
+      turnRightCommandTriggerName,
+      Command(
+        onStart: () => turning = TurnDirections.right,
+        onStop: () => turning = null,
+      ),
+    );
+    registerCommand(
+      activateTerrainCommandTriggerName,
+      Command(
+        onStart: () => getTerrain(coordinates.floor())?.onActivate?.call(),
+      ),
+    );
+    registerCommand(nextItemCommandTriggerName, Command(onStart: nextItem));
+    registerCommand(
+      previousItemCommandTriggerName,
+      Command(onStart: previousItem),
+    );
+    registerCommand(
+      describeItemCommandTriggerName,
+      Command(onStart: describeItem),
+    );
+    registerCommand(watchItemCommandTriggerName, Command(onStart: watchItem));
+  }
 
   /// The name of the command trigger to watch an item.
   String watchItemCommandTriggerName;
@@ -148,8 +202,14 @@ class MapLevel extends Level {
         final c = coordinates.floor();
         final aCoordinates = a.coordinates;
         final bCoordinates = b.coordinates;
-        if (aCoordinates == null || bCoordinates == null) {
-          return 0;
+        if (aCoordinates == null) {
+          if (bCoordinates == null) {
+            return 0;
+          } else {
+            return -1;
+          }
+        } else if (bCoordinates == null) {
+          return 1;
         }
         return c.distanceTo(aCoordinates).compareTo(c.distanceTo(bCoordinates));
       },
@@ -365,59 +425,6 @@ class MapLevel extends Level {
       tiles.add(List.generate(maxY, (final index) => null));
     }
     terrains.forEach(registerTerrain);
-    final preset = reverbPreset;
-    if (preset != null) {
-      final r = game.createReverb(preset);
-      interfaceSoundsChannel.addReverb(reverb: r);
-      game.ambianceSounds.addReverb(reverb: r);
-      reverb = r;
-    } else {
-      reverb = null;
-    }
-    registerCommand(
-      forwardsCommandTriggerName,
-      Command(
-        onStart: () => moving = MovementDirections.forward,
-        onStop: () => moving = null,
-      ),
-    );
-    registerCommand(
-      backwardsCommandTriggerName,
-      Command(
-        onStart: () => moving = MovementDirections.backward,
-        onStop: () => moving = null,
-      ),
-    );
-    registerCommand(
-      turnLeftCommandTriggerName,
-      Command(
-        onStart: () => turning = TurnDirections.left,
-        onStop: () => turning = null,
-      ),
-    );
-    registerCommand(
-      turnRightCommandTriggerName,
-      Command(
-        onStart: () => turning = TurnDirections.right,
-        onStop: () => turning = null,
-      ),
-    );
-    registerCommand(
-      activateTerrainCommandTriggerName,
-      Command(
-        onStart: () => getTerrain(coordinates.floor())?.onActivate?.call(),
-      ),
-    );
-    registerCommand(nextItemCommandTriggerName, Command(onStart: nextItem));
-    registerCommand(
-      previousItemCommandTriggerName,
-      Command(onStart: previousItem),
-    );
-    registerCommand(
-      describeItemCommandTriggerName,
-      Command(onStart: describeItem),
-    );
-    registerCommand(watchItemCommandTriggerName, Command(onStart: watchItem));
     super.onPush(fadeLength: fadeLength);
   }
 
