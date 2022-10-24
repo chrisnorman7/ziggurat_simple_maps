@@ -37,4 +37,8 @@ class MapLevelItem {
 
   /// The description of this item.
   final AssetReference descriptionSound;
+
+  /// Describe this object.
+  @override
+  String toString() => '<$runtimeType $name: $descriptionText>';
 }
