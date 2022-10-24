@@ -195,7 +195,8 @@ class MapLevel extends Level {
 
   /// The sorted version of the [items] list.
   ///
-  /// This list will be sorted by the distance from [coordinates].
+  /// This list will be sorted by the distance from [coordinates], with those
+  /// items with no coordinates appearing first.
   List<MapLevelItem> get sortedItems => List<MapLevelItem>.from(items)
     ..sort(
       (final a, final b) {
