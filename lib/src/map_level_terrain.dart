@@ -4,7 +4,7 @@ import 'package:ziggurat/ziggurat.dart';
 
 import 'map_level.dart';
 
-/// A feature of a [MapLevel].
+/// A terrain in a [MapLevel].
 class MapLevelTerrain {
   /// Create an instance.
   const MapLevelTerrain({
@@ -16,13 +16,13 @@ class MapLevelTerrain {
     this.onExit,
   });
 
-  /// The start coordinates of this feature.
+  /// The start coordinates of this terrain.
   final Point<int> start;
 
-  /// The end coordinates of this feature.
+  /// The end coordinates of this terrain.
   final Point<int> end;
 
-  /// The function to call when this feature is activated.
+  /// The function to call when this terrain is activated.
   final TaskFunction? onActivate;
 
   /// The function to call when entering this terrain.

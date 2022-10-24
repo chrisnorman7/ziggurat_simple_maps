@@ -103,7 +103,7 @@ class MapLevel extends Level {
   /// The max y + 1 of this map.
   final int maxY;
 
-  /// The features of this map.
+  /// The terrains of this map.
   final List<MapLevelTerrain> terrains;
 
   /// The loaded tiles.
@@ -211,7 +211,7 @@ class MapLevel extends Level {
   /// The current terrain.
   MapLevelTerrain? currentTerrain;
 
-  /// Get the feature at the given [position].
+  /// Get the terrain at the given [position].
   MapLevelTerrain? getTerrain(final Point<int> position) =>
       tiles[position.x][position.y];
 
@@ -532,7 +532,7 @@ class MapLevel extends Level {
       for (var y = terrain.start.y; y <= terrain.end.y; y++) {
         final f = tiles[x][y];
         if (f != null) {
-          throw StateError('Feature $terrain overlaps feature $f.');
+          throw StateError('Terrain $terrain overlaps terrain $f.');
         }
         tiles[x][y] = terrain;
       }
