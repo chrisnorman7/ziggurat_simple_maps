@@ -1,5 +1,5 @@
 name: ziggurat_simple_maps
-version: 0.1.0
+version: 0.1.1
 description: Provides simple maps for use with [Ziggurat](https://pub.dev/packages/ziggurat).
 repository: https://github.com/chrisnorman7/ziggurat_simple_maps
 environment:
