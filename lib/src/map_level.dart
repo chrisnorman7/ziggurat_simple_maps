@@ -509,6 +509,9 @@ class MapLevel extends Level {
   /// Move to the next item.
   void nextItem() {
     final i = sortedItems;
+    if (i.isEmpty) {
+      return;
+    }
     var p = currentItemPosition;
     if (p == (i.length - 1)) {
       p = 0;
@@ -524,6 +527,9 @@ class MapLevel extends Level {
   /// Show the previous item.
   void previousItem() {
     final i = sortedItems;
+    if (i.isEmpty) {
+      return;
+    }
     var p = currentItemPosition;
     if (p == null || p == 0) {
       p = i.length - 1;
