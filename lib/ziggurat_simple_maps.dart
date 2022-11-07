@@ -4,5 +4,4 @@ library ziggurat_simple_maps;
 export 'src/map_level.dart';
 export 'src/map_level_item.dart';
 export 'src/map_level_terrain.dart';
-export 'src/rumble_effect.dart';
 export 'src/watch_item.dart';

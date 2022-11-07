@@ -7,7 +7,6 @@ import 'package:ziggurat/ziggurat.dart';
 
 import 'map_level_item.dart';
 import 'map_level_terrain.dart';
-import 'rumble_effect.dart';
 import 'watch_item.dart';
 
 /// A level which represents a map.
