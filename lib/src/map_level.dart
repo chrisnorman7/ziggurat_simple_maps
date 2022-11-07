@@ -54,6 +54,10 @@ class MapLevel extends Level {
     this.lastEarcon,
     this.currentItemPosition,
     this.watchItemCommandTriggerName = 'watch_item',
+    this.watchRumble,
+    this.turnRumble,
+    this.moveRumble,
+    this.wallRumble,
   })  : tiles = [],
         interfaceSoundsChannel = game.createSoundChannel(),
         super(
@@ -220,6 +224,9 @@ class MapLevel extends Level {
   /// Information about the item being watched.
   WatchItem? watching;
 
+  /// The rumble effect to use when pinging a watch.
+  final RumbleEffect? watchRumble;
+
   /// The last earcon sound to play.
   Sound? lastEarcon;
 
@@ -264,8 +271,17 @@ class MapLevel extends Level {
   /// The time the last move was performed.
   int lastMoved;
 
+  /// The rumble effect to use when moving.
+  final RumbleEffect? moveRumble;
+
+  /// The rumble effect to use when hitting a wall.
+  final RumbleEffect? wallRumble;
+
   /// The time the last turn was performed.
   int lastTurn;
+
+  /// The rumble effect to use when turning.
+  final RumbleEffect? turnRumble;
 
   /// The current position in the items menu.
   int? currentItemPosition;
@@ -312,6 +328,7 @@ class MapLevel extends Level {
       heading = (heading + turnAmount) % 360;
     }
     game.setListenerOrientation(heading);
+    turnRumble?.dispatch(game);
   }
 
   /// Move the player in the given [direction].
@@ -338,8 +355,10 @@ class MapLevel extends Level {
       if (sound != null) {
         playSound(sound: sound);
       }
+      wallRumble?.dispatch(game);
     } else {
       coordinates = newCoordinates;
+      moveRumble?.dispatch(game);
       game.setListenerPosition(coordinates.x, coordinates.y, 0.0);
       final oldTerrain = currentTerrain;
       final newTerrain = getTerrain(newCoordinates.floor());
@@ -360,6 +379,7 @@ class MapLevel extends Level {
     required final WatchItem watch,
     required final int timeDelta,
   }) {
+    watchRumble?.dispatch(game);
     final d = coordinates.distanceTo(watch.item.coordinates!.toDouble());
     if (d < 1) {
       if (watch.beaconLastPlayed != 0) {
