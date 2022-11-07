@@ -7,6 +7,7 @@ import 'package:ziggurat/ziggurat.dart';
 
 import 'map_level_item.dart';
 import 'map_level_terrain.dart';
+import 'rumble_effect.dart';
 import 'watch_item.dart';
 
 /// A level which represents a map.
@@ -559,10 +560,12 @@ class MapLevel extends Level {
     final AssetReference? navigateSound,
     final double? fadeInTime = 0.5,
     final double? fadeOutTime = 3.0,
+    final RumbleEffect? rumbleEffect,
   }) {
     if (navigateSound != null) {
       game.playSimpleSound(sound: navigateSound);
     }
+    rumbleEffect?.dispatch(game);
     game.replaceLevel(
       mapLevel,
       fadeInTime: fadeInTime,
