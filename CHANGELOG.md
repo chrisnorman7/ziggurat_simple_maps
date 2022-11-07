@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0]
+
+### Added
+
+- Added the possibility for tumble effects to be used in many places.
+
 ## [0.1.1]
 
 ### Fixed
