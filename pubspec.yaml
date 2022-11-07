@@ -7,7 +7,7 @@ environment:
 
 dependencies:
   dart_sdl: ^0.10.1
-  ziggurat: ^0.54.0
+  ziggurat: ^0.55.0
 
 dev_dependencies:
   lints: ^2.0.0
